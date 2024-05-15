@@ -3,32 +3,42 @@ import MQTT from 'paho-mqtt'
 import nakuja from '/nakuja_logo.png'
 import setting from './assets/setting.svg';
 
-let client = new MQTT.Client("localhost", 1783, "dashboard");
-
-
-  //called when client connects
-  let onConnect = () => {
-    console.log("connected");
-    document.getElementById('connected').innerHTML = "Connected";
-
-  }
-
-  // connect the client
-  client.connect({
-    onSuccess: onConnect,
-    keepAliveInterval: 3600,
-  });
-
-
 
 
 export default function App() {
   let initialTime = 5;
   let [seconds, setSeconds] = useState(initialTime);
 
+  let [client] = useState(new MQTT.Client("localhost", 1783, "dashboard"));
 
   let [clicked, setClicked] = useState(false);
   let [clickedStandby, setClickedStandby] = useState(false);
+
+
+  useEffect(()=>{
+    //called when client connects
+    let onConnect = () => {
+      console.log("connected");
+      document.getElementById('connected').innerHTML = "Connected";
+
+    }
+
+    // connect the client
+    client.connect({
+      onSuccess: onConnect,
+      keepAliveInterval: 3600,
+    });
+
+    // set callback handlers
+    onConnectionLost = onConnectionLost;
+    // client.onMessageArrived = onMessageArrived;
+
+
+    return () => {
+      client.disconnect();
+    };
+
+  },[])
 
   // called when the client loses its connection
   let onConnectionLost = (responseObject) => {
@@ -36,7 +46,6 @@ export default function App() {
       console.log("onConnectionLost:" + responseObject.errorMessage);
     }
   }
-
 
   // called when a message arrives
   // let onMessageArrived = (message) => {
@@ -94,17 +103,6 @@ export default function App() {
     setClickedStandby(true);
 
   }
-
-  useEffect(() => {
-    // set callback handlers
-    onConnectionLost = onConnectionLost;
-    // client.onMessageArrived = onMessageArrived;
-
-
-    // return () => {
-    //   client.disconnect();
-    // };
-  }, []);
 
 
   return (

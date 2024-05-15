@@ -5,8 +5,8 @@ import Settings from './settings.jsx'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+  <React.Fragment>
     <Settings />
     <App />
-  </React.StrictMode>,
+  </React.Fragment>,
 )
